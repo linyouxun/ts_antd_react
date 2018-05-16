@@ -1,5 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const theme = require('./src/common/theme');
 const rootPath = path.resolve(__dirname, './src');
 const config = {
   mode: 'development',
@@ -16,7 +18,25 @@ const config = {
       test: /\.tsx?$/,
       exclude: /node_modules/,
       use: [{
-        loader: 'ts-loader'
+        loader: 'babel-loader',
+        options: {
+          plugins: [
+            ['transform-runtime'],
+            ['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }],
+          ]
+        }
+      }, {
+        loader: 'ts-loader',
+        options: {
+          transpileOnly: true,
+          // compilerOptions: {
+          //   target: 'es6',
+          //   jsx: 'react',
+          //   moduleResolution: 'node',
+          //   declaration: false,
+          //   sourceMap: true,
+          // },
+        },
       }]
     }, {
       test: /\.jsx?$/,
@@ -26,16 +46,47 @@ const config = {
         options: {
           presets: ['react', 'es2015', 'stage-0'],
           plugins: [
-            ['transform-runtime']
+            ['transform-runtime'],
+            ['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }],
           ],
         }
       }]
-    }]
+    }, {
+      test: /\.css$/,
+      use: [
+        MiniCssExtractPlugin.loader,
+        { loader: 'css-loader', options: { importLoaders: 1 } },
+        { loader: 'postcss-loader' },
+      ],
+    }, {
+      test: /\.less$/,
+      use: [
+        MiniCssExtractPlugin.loader,
+        { loader: 'css-loader', options: { importLoaders: 1 } },
+        { loader: 'postcss-loader' },
+        { loader: 'less-loader', options: { javascriptEnabled: true, modifyVars: theme() } },
+      ],
+    }, {
+      test: /\.scss$/,
+      use: [
+        MiniCssExtractPlugin.loader,
+        { loader: 'css-loader', options: { importLoaders: 1 } },
+        { loader: 'postcss-loader' },
+        { loader: 'sass-loader' },
+      ],
+    }, {
+      test: /\.(jpe?g|png|gif|svg|woff|eot|ttf)$/,
+      use: 'file-loader?limit=1&name=img/[sha512:hash:base64:7].[ext]',
+    },]
   },
   devtool: 'source-map',
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './src/index.html')
+    }),
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[name].css',
     })
   ]
 }

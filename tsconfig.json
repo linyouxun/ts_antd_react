@@ -2,10 +2,12 @@
   "compilerOptions": {
     "rootDir": "src",
     "noImplicitAny": true,
-    "target": "es5",
+    "target": "es6",
     "jsx": "react",
     "allowSyntheticDefaultImports": true
+
   },
+  "transpileOnly": true,
   "exclude": [
     "node_modules",
     "build",
