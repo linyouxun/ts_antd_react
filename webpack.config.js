@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const theme = require('./src/common/theme');
 const rootPath = path.resolve(__dirname, './src');
+const tsImportPluginFactory = require('ts-import-plugin');
 const config = {
   mode: 'development',
   entry: path.resolve(rootPath, './index.tsx'),
@@ -18,24 +19,24 @@ const config = {
       test: /\.tsx?$/,
       exclude: /node_modules/,
       use: [{
-        loader: 'babel-loader',
-        options: {
-          plugins: [
-            ['transform-runtime'],
-            ['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }],
-          ]
-        }
-      }, {
         loader: 'ts-loader',
         options: {
           transpileOnly: true,
-          // compilerOptions: {
-          //   target: 'es6',
-          //   jsx: 'react',
-          //   moduleResolution: 'node',
-          //   declaration: false,
-          //   sourceMap: true,
-          // },
+          getCustomTransformers: () => ({
+            before: [ tsImportPluginFactory({
+              libraryName: 'antd',
+              libraryDirectory: 'lib',
+              style: true
+            }) ]
+          }),
+          compilerOptions: {
+            target: 'es6',
+            jsx: 'react',
+            // moduleResolution: 'node',
+            declaration: false,
+            sourceMap: true,
+            module: 'es2015'
+          },
         },
       }]
     }, {

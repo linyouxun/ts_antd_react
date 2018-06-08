@@ -2,10 +2,20 @@
   "compilerOptions": {
     "rootDir": "src",
     "noImplicitAny": true,
-    "target": "es6",
+    "allowSyntheticDefaultImports": true,
+    "module": "esnext",
+    "target": "es5",
+    "lib": ["es6", "dom"],
+    "sourceMap": true,
+    "allowJs": true,
     "jsx": "react",
-    "allowSyntheticDefaultImports": true
-
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals": true
   },
   "transpileOnly": true,
   "exclude": [
@@ -13,4 +23,7 @@
     "build",
     "scripts"
   ],
+  "types": [
+    "typePatches"
+  ]
 }

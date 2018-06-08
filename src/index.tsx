@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { render } from 'react-dom';
-import { Switch, Route, BrowserRouter as Router } from 'react-router-dom';
+import { Switch, Route, BrowserRouter as Router, Link } from 'react-router-dom';
 import { Menu, Icon, Layout, Breadcrumb } from 'antd';
 // import 'antd/lib/menu/style';
 // import 'antd/lib/icon/style';
 // import 'antd/lib/layout/style';
 // import 'antd/lib/breadcrumb/style';
 import SiteHeader from '../src/compoments/SiteHeader';
-import routes from './routes';
+import routes from './routes/index';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu, Item } = Menu;
@@ -18,22 +18,42 @@ interface IAppProps {
   name: string;
 }
 interface IAppState {
-  collapsed: boolean
+  collapsed: boolean;
+  menuMode: 'vertical' | 'vertical-left' | 'vertical-right' | 'horizontal' | 'inline';
+}
+
+interface ClickParam {
+  key: string;
+  keyPath: Array<string>;
+  item: any;
+  domEvent: any;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
   constructor(props: any) {
     super(props);
-    console.log('log init index');
     this.state = {
       collapsed: false,
+      menuMode: 'inline'
     };
   }
   onCollapse(collapsed: boolean) {
-    this.setState({ collapsed });
+    if (collapsed) {
+      this.setState({
+        collapsed,
+        menuMode: 'vertical'
+      });
+    } else {
+      this.setState({
+        collapsed,
+        menuMode: 'inline'
+      });
+    }
   }
 
-  onClickSilderMenu() {
+  onClickSilderMenu(param: ClickParam) {
+    console.log(param);
+
     // this.props.history.push(path);
 
     // 匹配路由
@@ -50,25 +70,28 @@ class App extends React.Component<IAppProps, IAppState> {
   }
   public render(): JSX.Element {
     let { name } = this.props;
+    let { menuMode } = this.state;
 
     const menus = routes.map((item) => {
       return (
         <Item key={!!item.key ? item.key : item.path}>
-          <Icon type="pie-chart" />
-          <span>{item.name}</span>
+          <Link to={item.key}>
+            <Icon type="pie-chart" />
+            <span>{item.name}</span>
+          </Link>
         </Item>
       );
     });
     return (
       <div>
         <SiteHeader />
-        <Layout className="wrapper">
+        <Layout className="wrapper" style={{'minHeight': 'calc(100vh - 3rem - 0px)'}}>
           <Sider
             collapsible
             collapsed={this.state.collapsed}
             onCollapse={this.onCollapse.bind(this)}
           >
-            <Menu theme="dark" defaultSelectedKeys={['/']} mode="inline" onClick={this.onClickSilderMenu.bind(this)}>
+            <Menu theme="dark" defaultSelectedKeys={['/']} mode={menuMode} onClick={this.onClickSilderMenu.bind(this)}>
               {menus}
             </Menu>
           </Sider>
